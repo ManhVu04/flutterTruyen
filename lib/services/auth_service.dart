@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../models/user_profile.dart';
+import 'firestore_service.dart';
 
 class AuthService {
   AuthService._();
@@ -164,21 +166,18 @@ class AuthService {
 
   Future<void> _ensureProfile(User? user) async {
     if (user == null) return;
-    final doc = _firestore.collection('users').doc(user.uid);
-    final snapshot = await doc.get();
+    final profileRef = FirestoreService.instance.users.doc(user.uid);
+    final snapshot = await profileRef.get();
 
     if (snapshot.exists) return;
 
-    await doc.set({
-      'displayName': user.displayName ?? '',
-      'email': user.email ?? '',
-      'level': 'Luyen Khi Tang 1',
-      'vip': false,
-      'favorites': <String>[],
-      'readingProgress': <String, Map<String, dynamic>>{},
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    final profile = UserProfile.initial(
+      id: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+    );
+
+    await FirestoreService.instance.upsertProfile(profile);
   }
 
   Future<void> updateReadingProgress({

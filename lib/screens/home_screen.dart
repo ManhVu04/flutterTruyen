@@ -1,12 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import '../models/user_profile.dart';
 import '../services/auth_service.dart';
+import 'admin_manage_comics_screen.dart';
+import 'admin_upload_screen.dart';
 import 'tabs/library_tab.dart';
 import 'tabs/simple_tab.dart';
+import 'tabs/comics_tab.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.profile});
+
+  final UserProfile profile;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -16,11 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   static const _titles = <String>[
-    'Tủ Sách',
-    'Truyện',
-    'Tìm kiếm',
-    'Thế giới',
-    'Tôi',
+    'Tu sach',
+    'Truyen',
+    'Tim kiem',
+    'The gioi',
+    'Toi',
   ];
 
   @override
@@ -31,11 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final pages = <Widget>[
-      LibraryTab(user: user),
-      const SimpleTab(icon: Icons.menu_book, title: 'Kho truyen dang cap nhat'),
+      LibraryTab(user: user, profile: widget.profile),
+      ComicsTab(profile: widget.profile),
       const SimpleTab(icon: Icons.search, title: 'Tim kiem truyen'),
       const SimpleTab(icon: Icons.public, title: 'The gioi truyen'),
-      _ProfileTab(user: user),
+      _ProfileTab(user: user, profile: widget.profile),
     ];
 
     return Scaffold(
@@ -51,11 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColor: Theme.of(context).colorScheme.primary,
         backgroundColor: Theme.of(context).colorScheme.surface,
         items: const [
-          TabItem(icon: Icons.book, title: 'Tủ Sách'),
-          TabItem(icon: Icons.menu_book, title: 'Truyện'),
-          TabItem(icon: Icons.search, title: 'Tìm kiếm'),
-          TabItem(icon: Icons.language, title: 'Thế giới'),
-          TabItem(icon: Icons.person, title: 'Tôi'),
+          TabItem(icon: Icons.book, title: 'Tu sach'),
+          TabItem(icon: Icons.menu_book, title: 'Truyen'),
+          TabItem(icon: Icons.search, title: 'Tim kiem'),
+          TabItem(icon: Icons.language, title: 'The gioi'),
+          TabItem(icon: Icons.person, title: 'Toi'),
         ],
         onTap: (index) => setState(() => _currentIndex = index),
       ),
@@ -64,14 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _ProfileTab extends StatelessWidget {
-  const _ProfileTab({required this.user});
+  const _ProfileTab({required this.user, required this.profile});
 
   final User user;
+  final UserProfile profile;
 
   @override
   Widget build(BuildContext context) {
-    final displayLetter = (user.displayName ?? user.email ?? 'T').isNotEmpty
-        ? (user.displayName ?? user.email ?? 'T')[0].toUpperCase()
+    final nameSource = profile.displayName.isNotEmpty
+        ? profile.displayName
+        : (user.displayName ?? user.email ?? 'T');
+    final displayLetter = nameSource.isNotEmpty
+        ? nameSource.trim()[0].toUpperCase()
         : 'T';
 
     return Padding(
@@ -88,13 +98,51 @@ class _ProfileTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            user.displayName ?? 'Chua cap nhat ten',
+            profile.displayName.isNotEmpty
+                ? profile.displayName
+                : (user.displayName ?? 'Chua cap nhat ten'),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
-          Text(user.email ?? '', textAlign: TextAlign.center),
+          Text(user.email ?? profile.email, textAlign: TextAlign.center),
+          const SizedBox(height: 8),
+          Chip(label: Text('VIP Level ${profile.vipLevel}')),
           const Spacer(),
+          if (profile.isAdmin) ...[
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AdminUploadScreen(profile: profile),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Thêm truyện mới'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AdminManageComicsScreen(profile: profile),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.library_books),
+              label: const Text('Quản lý truyện'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           ElevatedButton.icon(
             onPressed: () => AuthService.instance.signOut(),
             icon: const Icon(Icons.logout),

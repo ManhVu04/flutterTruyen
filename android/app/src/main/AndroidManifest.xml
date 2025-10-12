@@ -50,6 +50,25 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="com.google.firebase.auth"
+                    android:host="webtruyen-1c107.firebaseapp.com"
+                    android:path="/__/auth/handler" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
+            android:exported="true" />
+
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
