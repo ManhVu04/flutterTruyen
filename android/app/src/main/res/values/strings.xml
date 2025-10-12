@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">truyentranhmau_cuoiki</string>
+    <string name="facebook_app_id">1517140349533443</string>
+    <string name="facebook_client_token">2877e0ed24555a4e1e55a580dc8aa454f</string>
+    <string name="fb_login_protocol_scheme">fb1517140349533443</string>
+</resources>

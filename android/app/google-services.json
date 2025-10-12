@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "261052600551",
+    "firebase_url": "https://webtruyen-1c107-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "webtruyen-1c107",
+    "storage_bucket": "webtruyen-1c107.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261052600551:android:3f31342dcff06c2f435242",
+        "android_client_info": {
+          "package_name": "com.example.truyentranhmau_cuoiki"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "261052600551-0cl6peduik3rk0rmfu8vjahgjsit91ia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.truyentranhmau_cuoiki",
+            "certificate_hash": "4e62317fbde218b3a6987829177bd116f7424259"
+          }
+        },
+        {
+          "client_id": "261052600551-803s76pa23gbra8deli23amojmostklq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsCTFD74t4p38QcKkcpPcd19tWwKu-8OQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "261052600551-64f7ea7ec8mf9ufuks8tgegj2p5tc5mt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "261052600551-db3jbj26l1b6o20k2155rb7ea6dsmfj5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.truyentranhmauCuoiki"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
