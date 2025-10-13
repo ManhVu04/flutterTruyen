@@ -3,16 +3,23 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
 import '../services/auth_service.dart';
+import '../services/theme_service.dart';
 import 'admin_manage_comics_screen.dart';
 import 'admin_upload_screen.dart';
 import 'tabs/library_tab.dart';
 import 'tabs/simple_tab.dart';
 import 'tabs/comics_tab.dart';
+import 'tabs/search_tab.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.profile});
+  const HomeScreen({
+    super.key,
+    required this.profile,
+    required this.themeService,
+  });
 
   final UserProfile profile;
+  final ThemeService themeService;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -22,11 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   static const _titles = <String>[
-    'Tu sach',
-    'Truyen',
-    'Tim kiem',
-    'The gioi',
-    'Toi',
+    'Tủ Sách',
+    'Truyện',
+    'Tìm Kiếm',
+    'Thế Giới',
+    'Tôi',
   ];
 
   @override
@@ -39,9 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final pages = <Widget>[
       LibraryTab(user: user, profile: widget.profile),
       ComicsTab(profile: widget.profile),
-      const SimpleTab(icon: Icons.search, title: 'Tim kiem truyen'),
-      const SimpleTab(icon: Icons.public, title: 'The gioi truyen'),
-      _ProfileTab(user: user, profile: widget.profile),
+      SearchTab(profile: widget.profile),
+      const SimpleTab(icon: Icons.public, title: 'Thế giới truyện'),
+      _ProfileTab(
+        user: user,
+        profile: widget.profile,
+        themeService: widget.themeService,
+      ),
     ];
 
     return Scaffold(
@@ -57,11 +68,11 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColor: Theme.of(context).colorScheme.primary,
         backgroundColor: Theme.of(context).colorScheme.surface,
         items: const [
-          TabItem(icon: Icons.book, title: 'Tu sach'),
-          TabItem(icon: Icons.menu_book, title: 'Truyen'),
-          TabItem(icon: Icons.search, title: 'Tim kiem'),
-          TabItem(icon: Icons.language, title: 'The gioi'),
-          TabItem(icon: Icons.person, title: 'Toi'),
+          TabItem(icon: Icons.book, title: 'Tủ Sách'),
+          TabItem(icon: Icons.menu_book, title: 'Truyện'),
+          TabItem(icon: Icons.search, title: 'Tìm Kiếm'),
+          TabItem(icon: Icons.language, title: 'Thế Giới'),
+          TabItem(icon: Icons.person, title: 'Tôi'),
         ],
         onTap: (index) => setState(() => _currentIndex = index),
       ),
@@ -70,10 +81,15 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _ProfileTab extends StatelessWidget {
-  const _ProfileTab({required this.user, required this.profile});
+  const _ProfileTab({
+    required this.user,
+    required this.profile,
+    required this.themeService,
+  });
 
   final User user;
   final UserProfile profile;
+  final ThemeService themeService;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +124,21 @@ class _ProfileTab extends StatelessWidget {
           Text(user.email ?? profile.email, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Chip(label: Text('VIP Level ${profile.vipLevel}')),
+          const SizedBox(height: 24),
+          // Dark Mode Toggle
+          Card(
+            child: SwitchListTile(
+              title: const Text('Chế độ nền tối'),
+              subtitle: const Text('Bật/tắt giao diện tối'),
+              secondary: Icon(
+                themeService.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+              ),
+              value: themeService.isDarkMode,
+              onChanged: (value) {
+                themeService.toggleTheme();
+              },
+            ),
+          ),
           const Spacer(),
           if (profile.isAdmin) ...[
             ElevatedButton.icon(

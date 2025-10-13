@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/comic.dart';
 import '../models/user_profile.dart';
 import '../services/firestore_service.dart';
+import '../services/reading_history_service.dart';
+import '../services/chapter_comment_service.dart';
+import 'chapter_comments_screen.dart';
 
 class ChapterReaderScreen extends StatefulWidget {
   const ChapterReaderScreen({
@@ -23,6 +26,44 @@ class ChapterReaderScreen extends StatefulWidget {
 class _ChapterReaderScreenState extends State<ChapterReaderScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showAppBar = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Lưu lịch sử đọc ngay khi mở chapter
+    _saveReadingHistory();
+  }
+
+  Future<void> _saveReadingHistory() async {
+    await ReadingHistoryService.instance.saveHistory(
+      userId: widget.profile.id,
+      comicId: widget.comic.id,
+      chapterId: widget.chapter.id,
+      chapterTitle: widget.chapter.title,
+      chapterOrder: widget.chapter.order,
+    );
+  }
+
+  Stream<int> _getCommentCountStream() {
+    return ChapterCommentService.instance
+        .getChapterComments(
+          comicId: widget.comic.id,
+          chapterId: widget.chapter.id,
+        )
+        .map((snapshot) => snapshot.docs.length);
+  }
+
+  void _openComments() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ChapterCommentsScreen(
+          comic: widget.comic,
+          chapter: widget.chapter,
+          profile: widget.profile,
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -140,6 +181,23 @@ class _ChapterReaderScreenState extends State<ChapterReaderScreen> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Comment button
+              StreamBuilder<int>(
+                stream: _getCommentCountStream(),
+                builder: (context, snapshot) {
+                  final count = snapshot.data ?? 0;
+                  return IconButton(
+                    icon: Badge(
+                      label: count > 0 ? Text('$count') : null,
+                      isLabelVisible: count > 0,
+                      child: const Icon(Icons.chat_bubble_outline),
+                    ),
+                    onPressed: _openComments,
+                    color: Colors.white,
+                    tooltip: 'Bình luận',
+                  );
+                },
+              ),
               // Previous button
               ElevatedButton.icon(
                 onPressed: hasPrevious

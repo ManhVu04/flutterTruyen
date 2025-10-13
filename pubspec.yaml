@@ -16,6 +16,10 @@ dependencies:
   flutter_facebook_auth: ^7.1.2
   convex_bottom_bar: ^3.2.0
   intl: ^0.19.0
+  connectivity_plus: ^6.0.5
+  shared_preferences: ^2.2.0
+  image_picker: ^1.2.0
+  firebase_storage: ^13.0.2
 
 dev_dependencies:
   flutter_test:

@@ -156,7 +156,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             controller: _displayNameController,
                             textInputAction: TextInputAction.next,
                             decoration: const InputDecoration(
-                              labelText: 'Ten hien thi',
+                              labelText: 'Tên hiển thị',
                             ),
                           ),
                         TextFormField(
@@ -166,7 +166,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           decoration: const InputDecoration(labelText: 'Email'),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Nhap email hop le';
+                              return 'Nhập email hợp lệ';
                             }
                             return null;
                           },
@@ -176,11 +176,11 @@ class _SignInScreenState extends State<SignInScreen> {
                           controller: _passwordController,
                           obscureText: true,
                           decoration: const InputDecoration(
-                            labelText: 'Mat khau',
+                            labelText: 'Mật khẩu',
                           ),
                           validator: (value) {
                             if (value == null || value.length < 6) {
-                              return 'Mat khau tu 6 ky tu';
+                              return 'Mật khẩu từ 6 ký tự';
                             }
                             return null;
                           },
@@ -197,7 +197,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(_isRegister ? 'Dang ky' : 'Dang nhap'),
+                        : Text(_isRegister ? 'Đăng ký' : 'Đăng nhập'),
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
@@ -205,19 +205,19 @@ class _SignInScreenState extends State<SignInScreen> {
                   OutlinedButton.icon(
                     onPressed: _isLoading ? null : _handleGoogle,
                     icon: const Icon(Icons.g_mobiledata),
-                    label: const Text('Dang nhap bang Google'),
+                    label: const Text('Đăng nhập bằng Google'),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: _isLoading ? null : _handleFacebook,
                     icon: const Icon(Icons.facebook),
-                    label: const Text('Dang nhap bang Facebook'),
+                    label: const Text('Đăng nhập bằng Facebook'),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: _isLoading ? null : _handleGitHub,
                     icon: const Icon(Icons.code),
-                    label: const Text('Dang nhap bang GitHub'),
+                    label: const Text('Đăng nhập bằng GitHub'),
                   ),
                 ],
               ),

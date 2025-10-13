@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
+import '../services/theme_service.dart';
 import 'home_screen.dart';
 import 'sign_in_screen.dart';
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  const AuthGate({super.key, required this.themeService});
+
+  final ThemeService themeService;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +38,7 @@ class AuthGate extends StatelessWidget {
                   body: Center(child: CircularProgressIndicator()),
                 );
               }
-              return HomeScreen(profile: profile);
+              return HomeScreen(profile: profile, themeService: themeService);
             },
           );
         }

@@ -21,13 +21,14 @@ class _AdminEditComicScreenState extends State<AdminEditComicScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _coverUrlController;
-  late TextEditingController _statusController;
-  late TextEditingController _viewsController;
-  late TextEditingController _ratingController;
   late TextEditingController _vipTierController;
 
   List<String> _selectedTags = [];
+  String _selectedStatus = 'ongoing';
   bool _isSaving = false;
+
+  // Danh sách trạng thái có sẵn
+  final List<String> _availableStatuses = ['ongoing', 'completed', 'hiatus'];
 
   // Danh sách thể loại có sẵn
   final List<String> _availableTags = [
@@ -59,17 +60,11 @@ class _AdminEditComicScreenState extends State<AdminEditComicScreen> {
       text: widget.comic.description,
     );
     _coverUrlController = TextEditingController(text: widget.comic.coverUrl);
-    _statusController = TextEditingController(text: widget.comic.status);
-    _viewsController = TextEditingController(
-      text: widget.comic.views.toString(),
-    );
-    _ratingController = TextEditingController(
-      text: widget.comic.rating.toString(),
-    );
     _vipTierController = TextEditingController(
       text: widget.comic.vipTier.toString(),
     );
     _selectedTags = List.from(widget.comic.tags);
+    _selectedStatus = widget.comic.status;
   }
 
   @override
@@ -77,9 +72,6 @@ class _AdminEditComicScreenState extends State<AdminEditComicScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     _coverUrlController.dispose();
-    _statusController.dispose();
-    _viewsController.dispose();
-    _ratingController.dispose();
     _vipTierController.dispose();
     super.dispose();
   }
@@ -101,11 +93,12 @@ class _AdminEditComicScreenState extends State<AdminEditComicScreen> {
         title: _titleController.text.trim(),
         coverUrl: _coverUrlController.text.trim(),
         tags: _selectedTags,
-        status: _statusController.text.trim(),
-        views: int.tryParse(_viewsController.text.trim()) ?? widget.comic.views,
+        status: _selectedStatus,
+        views: widget
+            .comic
+            .views, // Không cho admin sửa, tự động tăng khi user xem
         rating:
-            double.tryParse(_ratingController.text.trim()) ??
-            widget.comic.rating,
+            widget.comic.rating, // Không cho admin sửa, tự động tính từ ratings
         vipTier:
             int.tryParse(_vipTierController.text.trim()) ??
             widget.comic.vipTier,
@@ -242,51 +235,82 @@ class _AdminEditComicScreenState extends State<AdminEditComicScreen> {
             ),
             const Divider(height: 1),
             _buildSection(
-              title: 'Trạng thái & Thống kê',
+              title: 'Trạng thái & VIP',
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _statusController,
-                        label: 'Trạng thái',
-                        icon: Icons.info,
-                        helperText: 'ongoing/completed/hiatus',
+                DropdownButtonFormField<String>(
+                  value: _selectedStatus,
+                  decoration: const InputDecoration(
+                    labelText: 'Trạng thái',
+                    prefixIcon: Icon(Icons.info),
+                    border: OutlineInputBorder(),
+                    filled: true,
+                  ),
+                  items: _availableStatuses.map((status) {
+                    return DropdownMenuItem(
+                      value: status,
+                      child: Text(
+                        status == 'ongoing'
+                            ? 'Đang ra'
+                            : status == 'completed'
+                            ? 'Hoàn thành'
+                            : 'Tạm dừng',
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _vipTierController,
-                        label: 'VIP Tier',
-                        icon: Icons.star,
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _selectedStatus = value);
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _viewsController,
-                        label: 'Lượt xem',
-                        icon: Icons.visibility,
-                        keyboardType: TextInputType.number,
-                      ),
+                _buildTextField(
+                  controller: _vipTierController,
+                  label: 'VIP Tier',
+                  icon: Icons.workspace_premium,
+                  keyboardType: TextInputType.number,
+                  helperText: '0 = Free, 1-3 = Yêu cầu VIP tương ứng',
+                ),
+              ],
+            ),
+            const Divider(height: 1),
+            _buildSection(
+              title: 'Thống kê (Chỉ đọc)',
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.visibility),
+                  title: const Text('Lượt xem'),
+                  subtitle: const Text(
+                    'Tự động tăng khi người dùng xem truyện',
+                  ),
+                  trailing: Text(
+                    '${widget.comic.views}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _ratingController,
-                        label: 'Đánh giá',
-                        icon: Icons.star_rate,
-                        keyboardType: TextInputType.number,
-                        helperText: '0.0 - 5.0',
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.star_rate),
+                  title: const Text('Đánh giá trung bình'),
+                  subtitle: const Text(
+                    'Tự động tính từ đánh giá của người dùng',
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber),
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.comic.rating.toStringAsFixed(1),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -3,41 +3,114 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/comic.dart';
 import '../../models/user_profile.dart';
 import '../../services/firestore_service.dart';
+import '../../services/connectivity_service.dart';
+import '../../widgets/no_internet_widget.dart';
 import '../comic_detail_screen.dart';
 import '../genre_list_screen.dart';
 
-class HomeComicsTab extends StatelessWidget {
+class HomeComicsTab extends StatefulWidget {
   const HomeComicsTab({super.key, required this.profile});
 
   final UserProfile profile;
 
   @override
+  State<HomeComicsTab> createState() => _HomeComicsTabState();
+}
+
+class _HomeComicsTabState extends State<HomeComicsTab> {
+  bool _isConnected = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkConnectivity();
+    _listenToConnectivity();
+  }
+
+  void _checkConnectivity() async {
+    final isConnected = await ConnectivityService.instance.checkConnection();
+    if (mounted) {
+      setState(() => _isConnected = isConnected);
+    }
+  }
+
+  void _listenToConnectivity() {
+    ConnectivityService.instance.connectionStream.listen((isConnected) {
+      if (mounted) {
+        setState(() => _isConnected = isConnected);
+        if (isConnected) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đã kết nối internet'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Mất kết nối internet'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    });
+  }
+
+  Future<void> _onRefresh() async {
+    _checkConnectivity();
+    // Delay để hiển thị animation
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_isConnected) {
+      return Scaffold(
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height - 200,
+              child: NoInternetWidget(onRetry: _onRefresh),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildBanner(context),
-            _buildCategoryButtons(context),
-            _buildSection(
-              context,
-              title: 'KHUYẾN KHÍCH ĐỌC 🔥',
-              icon: Icons.local_fire_department,
-              query: FirestoreService.instance.comics
-                  .orderBy('rating', descending: true)
-                  .limit(10),
-            ),
-            const SizedBox(height: 16),
-            _buildSection(
-              context,
-              title: 'TRUYỆN MỚI CẬP NHẬT',
-              icon: Icons.fiber_new,
-              query: FirestoreService.instance.comics
-                  .orderBy('updatedAt', descending: true)
-                  .limit(10),
-            ),
-          ],
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildBanner(context),
+              _buildCategoryButtons(context),
+              _buildSection(
+                context,
+                title: 'KHUYẾN KHÍCH ĐỌC 🔥',
+                icon: Icons.local_fire_department,
+                query: FirestoreService.instance.comics
+                    .orderBy('rating', descending: true)
+                    .limit(10),
+              ),
+              const SizedBox(height: 16),
+              _buildSection(
+                context,
+                title: 'TRUYỆN MỚI CẬP NHẬT',
+                icon: Icons.fiber_new,
+                query: FirestoreService.instance.comics
+                    .orderBy('updatedAt', descending: true)
+                    .limit(10),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -65,7 +138,7 @@ class HomeComicsTab extends StatelessWidget {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) =>
-                    ComicDetailScreen(comic: featured, profile: profile),
+                    ComicDetailScreen(comic: featured, profile: widget.profile),
               ),
             );
           },
@@ -179,7 +252,7 @@ class HomeComicsTab extends StatelessWidget {
         if (label == 'Thể Loại') {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => GenreListScreen(profile: profile),
+              builder: (_) => GenreListScreen(profile: widget.profile),
             ),
           );
         } else {
@@ -296,7 +369,8 @@ class HomeComicsTab extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => ComicDetailScreen(comic: comic, profile: profile),
+            builder: (_) =>
+                ComicDetailScreen(comic: comic, profile: widget.profile),
           ),
         );
       },

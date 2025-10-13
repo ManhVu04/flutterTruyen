@@ -1,0 +1,79 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Comics collection
+    match /comics/{comicId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+      
+      // Reviews subcollection
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if request.auth != null 
+                      && request.resource.data.userId == request.auth.uid
+                      && request.resource.data.rating is int
+                      && request.resource.data.rating >= 1
+                      && request.resource.data.rating <= 5
+                      && request.resource.data.comment is string
+                      && request.resource.data.comment.size() > 0
+                      && request.resource.data.comment.size() <= 30000;
+        allow update: if request.auth != null 
+                      && resource.data.userId == request.auth.uid;
+        allow delete: if request.auth != null 
+                      && resource.data.userId == request.auth.uid;
+      }
+      
+      // Chapters subcollection
+      match /chapters/{chapterId} {
+        allow read: if true;
+        allow write: if request.auth != null;
+      }
+      
+      // Ratings subcollection
+      match /ratings/{ratingId} {
+        allow read: if true;
+        allow write: if request.auth != null;
+      }
+    }
+    
+    // Posts collection
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Leaderboard collection
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Chapter Comments collection
+    match /chapterComments/{commentId} {
+      // Anyone can read comments
+      allow read: if true;
+      
+      // Authenticated users can create comments
+      allow create: if request.auth != null 
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.content is string
+                    && request.resource.data.content.size() > 0
+                    && request.resource.data.content.size() <= 5000;
+      
+      // Users can update their own comments (for likes/replies list)
+      allow update: if request.auth != null;
+      
+      // Users can delete their own comments
+      allow delete: if request.auth != null 
+                    && resource.data.userId == request.auth.uid;
+    }
+  }
+}
