@@ -22,11 +22,34 @@ class ComicByGenreScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot<Comic>>(
         stream: FirestoreService.instance.comics
             .where('tags', arrayContains: genre)
-            .orderBy('updatedAt', descending: true)
+            // Tạm thời bỏ orderBy để chờ index build xong
+            // .orderBy('updatedAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Lỗi: ${snapshot.error}'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Lỗi: ${snapshot.error}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Quay lại'),
+                  ),
+                ],
+              ),
+            );
           }
 
           if (!snapshot.hasData) {
