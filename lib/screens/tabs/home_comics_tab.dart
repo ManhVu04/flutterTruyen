@@ -7,6 +7,7 @@ import '../../services/connectivity_service.dart';
 import '../../widgets/no_internet_widget.dart';
 import '../comic_detail_screen.dart';
 import '../genre_list_screen.dart';
+import '../comic_list_screen.dart';
 
 class HomeComicsTab extends StatefulWidget {
   const HomeComicsTab({super.key, required this.profile});
@@ -313,7 +314,27 @@ class _HomeComicsTabState extends State<HomeComicsTab> {
               const Spacer(),
               TextButton(
                 onPressed: () {
-                  // TODO: Navigate to see all
+                  // Determine sort type based on section title
+                  String sortType = 'latest';
+                  String screenTitle = title;
+
+                  if (title.contains('KHUYẾN KHÍCH')) {
+                    sortType = 'rating';
+                    screenTitle = 'Truyện được khuyến khích đọc';
+                  } else if (title.contains('MỚI CẬP NHẬT')) {
+                    sortType = 'latest';
+                    screenTitle = 'Truyện mới cập nhật';
+                  }
+
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ComicListScreen(
+                        profile: widget.profile,
+                        initialSort: sortType,
+                        title: screenTitle,
+                      ),
+                    ),
+                  );
                 },
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
