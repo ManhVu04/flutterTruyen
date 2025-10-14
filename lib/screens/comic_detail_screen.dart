@@ -7,8 +7,8 @@ import '../models/user_profile.dart';
 import '../models/chapter_comment.dart';
 import '../services/firestore_service.dart';
 import '../services/reading_history_service.dart';
-import '../services/chapter_comment_service.dart';
 import '../widgets/comic_rating_widget.dart';
+import '../widgets/user_name_display.dart';
 import 'chapter_reader_screen.dart';
 import 'admin_edit_comic_screen.dart';
 import 'admin_manage_chapters_screen.dart';
@@ -632,8 +632,8 @@ class _ComicDetailScreenState extends State<ComicDetailScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      comment.userName,
+                    UserNameDisplay(
+                      userId: comment.userId,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,

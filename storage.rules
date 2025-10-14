@@ -18,5 +18,14 @@ service firebase.storage {
     match /reviews/{comicId}/{fileName} {
       allow delete: if request.auth != null;
     }
+    
+    // Allow users to upload their own avatar and background
+    match /users/{userId}/{fileName} {
+      allow write: if request.auth != null
+                   && request.auth.uid == userId
+                   && request.resource.size < 5 * 1024 * 1024  // Max 5MB
+                   && request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

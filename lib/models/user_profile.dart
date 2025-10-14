@@ -8,6 +8,7 @@ class UserProfile {
     required this.displayName,
     required this.email,
     required this.avatarUrl,
+    required this.backgroundUrl,
     required this.role,
     required this.vipLevel,
     required this.coins,
@@ -24,6 +25,7 @@ class UserProfile {
   final String displayName;
   final String email;
   final String avatarUrl;
+  final String backgroundUrl;
   final String role;
   final int vipLevel;
   final int coins;
@@ -44,6 +46,7 @@ class UserProfile {
       displayName: data['displayName']?.toString() ?? '',
       email: data['email']?.toString() ?? '',
       avatarUrl: data['avatarUrl']?.toString() ?? '',
+      backgroundUrl: data['backgroundUrl']?.toString() ?? '',
       role: data['role']?.toString() ?? 'reader',
       vipLevel: (data['vipLevel'] as num?)?.toInt() ?? 0,
       coins: (data['coins'] as num?)?.toInt() ?? 0,
@@ -66,6 +69,7 @@ class UserProfile {
       'displayName': displayName,
       'email': email,
       'avatarUrl': avatarUrl,
+      'backgroundUrl': backgroundUrl,
       'role': role,
       'vipLevel': vipLevel,
       'coins': coins,
@@ -89,6 +93,7 @@ class UserProfile {
       displayName: displayName ?? '',
       email: email ?? '',
       avatarUrl: '',
+      backgroundUrl: '',
       role: 'reader',
       vipLevel: 0,
       coins: 0,
@@ -109,6 +114,7 @@ class UserProfile {
   UserProfile copyWith({
     String? displayName,
     String? avatarUrl,
+    String? backgroundUrl,
     String? role,
     int? vipLevel,
     int? coins,
@@ -123,6 +129,7 @@ class UserProfile {
       displayName: displayName ?? this.displayName,
       email: email,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      backgroundUrl: backgroundUrl ?? this.backgroundUrl,
       role: role ?? this.role,
       vipLevel: vipLevel ?? this.vipLevel,
       coins: coins ?? this.coins,

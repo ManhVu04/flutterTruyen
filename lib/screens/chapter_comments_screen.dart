@@ -5,6 +5,7 @@ import '../models/chapter_comment.dart';
 import '../models/comic.dart';
 import '../models/user_profile.dart';
 import '../services/chapter_comment_service.dart';
+import '../widgets/user_name_display.dart';
 
 class ChapterCommentsScreen extends StatefulWidget {
   const ChapterCommentsScreen({
@@ -198,8 +199,8 @@ class _ChapterCommentsScreenState extends State<ChapterCommentsScreen> {
                     // User name and time
                     Row(
                       children: [
-                        Text(
-                          comment.userName,
+                        UserNameDisplay(
+                          userId: comment.userId,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -391,13 +392,12 @@ class _ChapterCommentsScreenState extends State<ChapterCommentsScreen> {
                 Row(
                   children: [
                     Flexible(
-                      child: Text(
-                        reply.userName,
+                      child: UserNameDisplay(
+                        userId: reply.userId,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 6),
