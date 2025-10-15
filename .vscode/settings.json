@@ -7,11 +7,21 @@
   // Disable Java extension for Flutter android folder
   "java.import.gradle.enabled": false,
   "java.configuration.updateBuildConfiguration": "disabled",
+  "java.import.gradle.wrapper.enabled": false,
+  "java.import.gradle.arguments": "",
+  "java.project.sourcePaths": [],
   "java.import.exclusions": [
     "**/android/**",
     "**/build/**",
-    "**/.gradle/**"
+    "**/.gradle/**",
+    "**/ios/**",
+    "**/linux/**",
+    "**/macos/**",
+    "**/windows/**",
+    "**/web/**"
   ],
+  "java.import.generatesMetadataFilesAtProjectRoot": false,
+  "java.server.launchMode": "Standard",
   
   // Files to exclude from explorer
   "files.exclude": {
