@@ -238,7 +238,7 @@ class _AdminEditComicScreenState extends State<AdminEditComicScreen> {
               title: 'Trạng thái & VIP',
               children: [
                 DropdownButtonFormField<String>(
-                  value: _selectedStatus,
+                  initialValue: _selectedStatus,
                   decoration: const InputDecoration(
                     labelText: 'Trạng thái',
                     prefixIcon: Icon(Icons.info),

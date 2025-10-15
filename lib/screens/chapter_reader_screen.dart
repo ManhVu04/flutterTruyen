@@ -409,7 +409,7 @@ class _ChapterReaderScreenState extends State<ChapterReaderScreen>
             child: AnimatedOpacity(
               opacity: _showPageIndicator ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 200),
-              child: Container(
+              child: SizedBox(
                 height: 3,
                 child: LinearProgressIndicator(
                   value: _scrollProgress,

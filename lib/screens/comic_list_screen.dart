@@ -25,7 +25,7 @@ class _ComicListScreenState extends State<ComicListScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _sortBy = 'latest'; // latest, views, rating
-  List<String> _selectedGenres = [];
+  final List<String> _selectedGenres = [];
 
   final List<String> _genres = [
     'Cổ Đại',

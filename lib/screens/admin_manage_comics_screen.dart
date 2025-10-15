@@ -193,7 +193,7 @@ class _AdminManageComicsScreenState extends State<AdminManageComicsScreen> {
                 const SizedBox(width: 12),
                 Icon(Icons.star, size: 14, color: Colors.grey[600]),
                 const SizedBox(width: 4),
-                Text('${comic.rating.toStringAsFixed(1)}'),
+                Text(comic.rating.toStringAsFixed(1)),
               ],
             ),
             const SizedBox(height: 4),

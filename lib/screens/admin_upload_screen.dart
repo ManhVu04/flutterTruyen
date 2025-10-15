@@ -252,7 +252,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _status,
+                      initialValue: _status,
                       decoration: const InputDecoration(
                         labelText: 'Trạng thái',
                         border: OutlineInputBorder(),
@@ -285,7 +285,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<int>(
-                      value: _vipTier,
+                      initialValue: _vipTier,
                       decoration: const InputDecoration(
                         labelText: 'VIP Tier yêu cầu',
                         border: OutlineInputBorder(),
