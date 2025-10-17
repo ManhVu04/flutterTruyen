@@ -9,7 +9,7 @@ import 'admin_manage_comics_screen.dart';
 import 'admin_upload_screen.dart';
 import 'edit_profile_screen.dart';
 import 'tabs/library_tab.dart';
-import 'tabs/simple_tab.dart';
+import 'tabs/forum_tab.dart';
 import 'tabs/comics_tab.dart';
 import 'tabs/search_tab.dart';
 
@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           LibraryTab(user: user, profile: currentProfile),
           ComicsTab(profile: currentProfile),
           SearchTab(profile: currentProfile),
-          const SimpleTab(icon: Icons.public, title: 'Thế giới truyện'),
+          ForumTab(profile: currentProfile),
           _ProfileTab(
             user: user,
             profile: currentProfile,

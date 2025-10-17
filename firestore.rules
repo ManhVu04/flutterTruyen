@@ -50,6 +50,48 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
     
+    // Forum Posts collection
+    match /forumPosts/{postId} {
+      allow read: if true;
+      
+      // Allow users to create their own posts
+      allow create: if request.auth != null 
+                    && request.resource.data.authorId == request.auth.uid
+                    && request.resource.data.content is string
+                    && request.resource.data.content.size() > 0
+                    && request.resource.data.content.size() <= 1000;
+      
+      // Allow users to update their own posts, like posts, or update comment count
+      allow update: if request.auth != null
+                    && (resource.data.authorId == request.auth.uid
+                        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedBy', 'updatedAt'])
+                        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commentCount', 'updatedAt']));
+      
+      // Allow users to delete their own posts
+      allow delete: if request.auth != null 
+                    && resource.data.authorId == request.auth.uid;
+    }
+    
+    // Forum Comments collection
+    match /forumComments/{commentId} {
+      allow read: if true;
+      
+      // Allow users to create comments (validate content exists and reasonable length)
+      allow create: if request.auth != null 
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.content is string
+                    && request.resource.data.content.size() > 0
+                    && request.resource.data.content.size() <= 5000;
+      
+      // Allow updating replyCount when someone replies
+      allow update: if request.auth != null
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replyCount']);
+      
+      // Allow users to delete their own comments
+      allow delete: if request.auth != null 
+                    && resource.data.userId == request.auth.uid;
+    }
+    
     // Leaderboard collection
     match /leaderboard/{userId} {
       allow read: if true;

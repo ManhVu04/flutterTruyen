@@ -39,18 +39,7 @@ class FirestoreService {
       .collection('posts')
       .withConverter<ForumPost>(
         fromFirestore: (snapshot, _) => ForumPost.fromDoc(snapshot),
-        toFirestore: (post, _) => {
-          'authorId': post.authorId,
-          'content': post.content,
-          'attachments': post.attachments,
-          'reactions': post.reactions,
-          'createdAt': post.createdAt != null
-              ? Timestamp.fromDate(post.createdAt!)
-              : FieldValue.serverTimestamp(),
-          'updatedAt': post.updatedAt != null
-              ? Timestamp.fromDate(post.updatedAt!)
-              : FieldValue.serverTimestamp(),
-        },
+        toFirestore: (post, _) => post.toMap(),
       );
 
   CollectionReference<LeaderboardSnapshot> get leaderboards => _db

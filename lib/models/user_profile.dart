@@ -142,4 +142,21 @@ class UserProfile {
       updatedAt: DateTime.now(),
     );
   }
+
+  // Lấy profile từ Firestore
+  static Future<UserProfile?> getProfile(String userId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (!doc.exists) return null;
+
+      return UserProfile.fromDoc(doc);
+    } catch (e) {
+      debugPrint('Error fetching profile: $e');
+      return null;
+    }
+  }
 }
