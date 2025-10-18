@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/comic.dart';
 import '../models/user_profile.dart';
 import '../services/firestore_service.dart';
+import '../widgets/folder_image_picker_dialog.dart';
 
 class AdminEditChapterScreen extends StatefulWidget {
   const AdminEditChapterScreen({
@@ -119,6 +120,39 @@ class _AdminEditChapterScreenState extends State<AdminEditChapterScreen> {
     }
   }
 
+  Future<void> _loadImagesFromFolder() async {
+    try {
+      final urls = await showDialog<List<String>>(
+        context: context,
+        builder: (context) => const FolderImagePickerDialog(),
+      );
+
+      if (urls != null && urls.isNotEmpty) {
+        // Thêm URLs vào cuối text hiện có
+        final currentText = _pagesController.text;
+        final newText = currentText.isEmpty
+            ? urls.join('\n')
+            : '$currentText\n${urls.join('\n')}';
+
+        setState(() {
+          _pagesController.text = newText;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Đã thêm ${urls.length} trang từ thư mục')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isNew = widget.chapter == null;
@@ -224,6 +258,12 @@ class _AdminEditChapterScreenState extends State<AdminEditChapterScreen> {
                 validator: (value) => value == null || value.trim().isEmpty
                     ? 'Vui lòng nhập ít nhất 1 trang'
                     : null,
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: _isSaving ? null : _loadImagesFromFolder,
+                icon: const Icon(Icons.folder),
+                label: const Text('Tải ảnh từ thư mục Storage'),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
